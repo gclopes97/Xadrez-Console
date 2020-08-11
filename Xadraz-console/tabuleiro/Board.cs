@@ -13,9 +13,12 @@ namespace tabuleiro {
                 + colunas
                 + pecas.Length;
         }
-
         public Piece Peca(int linha, int coluna){
             return pecas[linha, coluna];
+        }
+        public void ColocarPeca(Piece p, Position pos) {
+            pecas[pos.Linha, pos.Coluna] = p;
+            p.Posicao = pos;
         }
     }
 }
