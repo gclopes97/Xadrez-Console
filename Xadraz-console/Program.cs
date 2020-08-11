@@ -1,9 +1,11 @@
 ﻿using System;
+using tabuleiro;
 
 namespace Xadraz_console {
     class Program {
         static void Main(string[] args) {
-            Console.WriteLine("Hello World!");
+            Board p = new Board();
+            Console.WriteLine(p);
         }
     }
 }
