@@ -1,6 +1,6 @@
 ﻿using tabuleiro;
 
-namespace Xadraz_console.tabuleiro {
+namespace tabuleiro {
     class Piece {
         public Position Posicao { get; set; }
         public Color Cor { get; protected set; }

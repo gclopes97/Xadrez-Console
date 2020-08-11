@@ -5,7 +5,7 @@ namespace Xadraz_console {
     class Program {
         static void Main(string[] args) {
             Board p = new Board();
-            Console.WriteLine(p);
+            Screen.imprimirTabuleiro(p);
         }
     }
 }
