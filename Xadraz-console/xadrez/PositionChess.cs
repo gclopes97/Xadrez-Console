@@ -1,6 +1,6 @@
 ﻿using tabuleiro;
 
-namespace Xadraz_console.xadrez {
+namespace xadrez {
     class PositionChess {
         public char Coluna { get; set; }
         public int Linha { get; set; }

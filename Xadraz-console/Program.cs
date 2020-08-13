@@ -10,10 +10,7 @@ namespace Xadraz_console {
                 while (!partida.Terminada) {
                     try {
                         Console.Clear();
-                        Screen.imprimirTabuleiro(partida.Tab);
-                        Console.WriteLine();
-                        Console.WriteLine("Turno: " + partida.Turno);
-                        Console.WriteLine("Aguardando jogada: " + partida.jogadorAtual);
+                        Screen.ImprimirPartida(partida);
 
                         Console.WriteLine();
                         Console.Write("Origem: ");
