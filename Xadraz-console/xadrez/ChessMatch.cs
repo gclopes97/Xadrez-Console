@@ -89,8 +89,6 @@ namespace xadrez {
                 MudaJogador();
             }
 
-            Piece p = Tab.Peca(destino);
-
             //Jogada especial en passant
             if (p is Pawn && (destino.Linha == origem.Linha - 2 || destino.Linha == origem.Linha + 2)) {
                 vulneravelEnPassant = p;
