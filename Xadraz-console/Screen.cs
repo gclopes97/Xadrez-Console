@@ -12,6 +12,9 @@ namespace Xadraz_console {
             Console.WriteLine();
             Console.WriteLine("Turno: " + partida.Turno);
             Console.WriteLine("Aguardando jogada: " + partida.jogadorAtual);
+            if (partida.Xeque) {
+                Console.WriteLine("XEQUE!");
+            }
         }
         public static void ImprimirPecasCapturadas(ChessMatch partida) {
             Console.WriteLine("Peças capturadas:");
@@ -50,7 +53,7 @@ namespace Xadraz_console {
             for (int i = 0; i < 8; i++) {
                 Console.Write(8 - i + " ");
                 for (int j = 0; j < 8; j++) {
-                    if (posicoesPossiveis[i,j]) {
+                    if (posicoesPossiveis[i, j]) {
                         Console.BackgroundColor = fundoAlterado;
                     }
                     else {
