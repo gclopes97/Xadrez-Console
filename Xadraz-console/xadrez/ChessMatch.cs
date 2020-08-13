@@ -46,9 +46,13 @@ namespace xadrez {
             else {
                 Xeque = false;
             }
-
-            Turno++;
-            MudaJogador();
+            if (EstaEmXeque(Adversaria(jogadorAtual))) {
+                Terminada = true;
+            }
+            else {
+                Turno++;
+                MudaJogador();
+            }
         }
         public void DesfazMovimento(Position origem, Position destino, Piece pecaCapturada) {
             Piece p = Tab.RetirarPeca(destino);
@@ -131,6 +135,29 @@ namespace xadrez {
                 }
             }
             return false;
+        }
+        public bool testeXequeMate(Color cor) {
+            if (!EstaEmXeque(cor)) {
+                return false;
+            }
+            foreach (Piece x in PecasEmJogo(cor)) {
+                bool[,] mat = x.MovimentosPosiveis();
+                for (int i = 0; i < 8; i++) {
+                    for (int j = 0; j < 8; j++) {
+                        if (mat[i, j]) {
+                            Position origem = x.Posicao;
+                            Position destino = new Position(i, j);
+                            Piece pecaCapturada = ExecutaMovimento(origem, destino);
+                            bool testeXeque = EstaEmXeque(cor);
+                            DesfazMovimento(origem, destino, pecaCapturada);
+                            if (!testeXeque) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
         }
         public void ColocarNovaPeca(char coluna, int linha, Piece peca) {
             Tab.ColocarPeca(peca, new PositionChess(coluna, linha).ToPosition());

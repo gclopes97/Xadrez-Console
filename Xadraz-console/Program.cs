@@ -34,7 +34,8 @@ namespace Xadraz_console {
                         Console.ReadLine();
                     }
                 }
-
+                Console.Clear();
+                Screen.ImprimirPartida(partida);
             }
             catch (BoardException e) {
                 Console.WriteLine("Erro no tabuleiro: " + e.Message);
