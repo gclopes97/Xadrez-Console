@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Reflection.PortableExecutable;
 using tabuleiro;
 
 namespace xadrez {
@@ -10,12 +9,14 @@ namespace xadrez {
         public bool Terminada { get; private set; }
         private HashSet<Piece> pecas;
         private HashSet<Piece> capturadas;
+        public Piece vulneravelEnPassant { get; private set; }
         public bool Xeque { get; private set; }
 
         public ChessMatch() {
             Tab = new Board();
             Turno = 1;
             jogadorAtual = Color.Branca;
+            vulneravelEnPassant = null;
             Terminada = false;
             Xeque = false;
             pecas = new HashSet<Piece>();
@@ -49,6 +50,21 @@ namespace xadrez {
                 Tab.ColocarPeca(T, destinoDaTorre);
             }
 
+            //#Jogadaespecial En Passant
+            if (p is Pawn) {
+                if (origem.Coluna != destino.Coluna && pecaCapturada == null) {
+                    Position posP;
+                    if (p.Cor == Color.Branca) {
+                        posP = new Position(destino.Linha + 1, destino.Coluna);
+                    }
+                    else {
+                        posP = new Position(destino.Linha - 1, destino.Coluna);
+                    }
+                    pecaCapturada = Tab.RetirarPeca(posP);
+                    capturadas.Add(pecaCapturada);
+                }
+            }
+
             return pecaCapturada;
         }
         public void RealizaJogada(Position origem, Position destino) {
@@ -71,6 +87,16 @@ namespace xadrez {
             else {
                 Turno++;
                 MudaJogador();
+            }
+
+            Piece p = Tab.Peca(destino);
+
+            //Jogada especial en passant
+            if (p is Pawn && (destino.Linha == origem.Linha - 2 || destino.Linha == origem.Linha + 2)) {
+                vulneravelEnPassant = p;
+            }
+            else {
+                vulneravelEnPassant = null;
             }
         }
         public void DesfazMovimento(Position origem, Position destino, Piece pecaCapturada) {
@@ -98,6 +124,21 @@ namespace xadrez {
                 Piece T = Tab.RetirarPeca(destinoDaTorre);
                 T.DecrementarQteMovimentos();
                 Tab.ColocarPeca(T, origemDaTorre);
+            }
+
+            //#Jogadaespecial en passant
+            if (p is Pawn) {
+                if (origem.Coluna != destino.Coluna && pecaCapturada == vulneravelEnPassant) {
+                    Piece peao = Tab.RetirarPeca(destino);
+                    Position posP;
+                    if (p.Cor == Color.Branca) {
+                        posP = new Position(3, destino.Coluna);
+                    }
+                    else {
+                        posP = new Position(4, destino.Coluna);
+                    }
+                    Tab.ColocarPeca(peao, posP);
+                }
             }
         }
         public void ValidarPosicaoDeOrigem(Position pos) {
@@ -162,9 +203,6 @@ namespace xadrez {
         }
         public bool EstaEmXeque(Color cor) {
             Piece R = Rei(cor);
-            if (R == null) {
-                throw new BoardException("Não tem rei da cor " + cor + " no tabuleiro!");
-            }
             foreach (Piece x in PecasEmJogo(Adversaria(cor))) {
                 bool[,] mat = x.MovimentosPosiveis();
                 if (mat[R.Posicao.Linha, R.Posicao.Coluna]) {
@@ -210,32 +248,32 @@ namespace xadrez {
             ColocarNovaPeca('f', 1, new Bishop(Tab, Color.Branca));
             ColocarNovaPeca('g', 1, new Knight(Tab, Color.Branca));
             ColocarNovaPeca('h', 1, new Rook(Tab, Color.Branca));
-            ColocarNovaPeca('a', 2, new Pawn(Tab, Color.Branca));
-            ColocarNovaPeca('b', 2, new Pawn(Tab, Color.Branca));
-            ColocarNovaPeca('c', 2, new Pawn(Tab, Color.Branca));
-            ColocarNovaPeca('d', 2, new Pawn(Tab, Color.Branca));
-            ColocarNovaPeca('e', 2, new Pawn(Tab, Color.Branca));
-            ColocarNovaPeca('f', 2, new Pawn(Tab, Color.Branca));
-            ColocarNovaPeca('g', 2, new Pawn(Tab, Color.Branca));
-            ColocarNovaPeca('h', 2, new Pawn(Tab, Color.Branca));
+            ColocarNovaPeca('a', 2, new Pawn(Tab, Color.Branca, this));
+            ColocarNovaPeca('b', 2, new Pawn(Tab, Color.Branca, this));
+            ColocarNovaPeca('c', 2, new Pawn(Tab, Color.Branca, this));
+            ColocarNovaPeca('d', 2, new Pawn(Tab, Color.Branca, this));
+            ColocarNovaPeca('e', 2, new Pawn(Tab, Color.Branca, this));
+            ColocarNovaPeca('f', 2, new Pawn(Tab, Color.Branca, this));
+            ColocarNovaPeca('g', 2, new Pawn(Tab, Color.Branca, this));
+            ColocarNovaPeca('h', 2, new Pawn(Tab, Color.Branca, this));
 
             //Pretas
             ColocarNovaPeca('a', 8, new Rook(Tab, Color.Preta));
             ColocarNovaPeca('b', 8, new Knight(Tab, Color.Preta));
             ColocarNovaPeca('c', 8, new Bishop(Tab, Color.Preta));
             ColocarNovaPeca('d', 8, new Queen(Tab, Color.Preta));
-            ColocarNovaPeca('e', 8, new King(Tab, Color.Preta,this));
+            ColocarNovaPeca('e', 8, new King(Tab, Color.Preta, this));
             ColocarNovaPeca('f', 8, new Bishop(Tab, Color.Preta));
             ColocarNovaPeca('g', 8, new Knight(Tab, Color.Preta));
             ColocarNovaPeca('h', 8, new Rook(Tab, Color.Preta));
-            ColocarNovaPeca('a', 7, new Pawn(Tab, Color.Preta));
-            ColocarNovaPeca('b', 7, new Pawn(Tab, Color.Preta));
-            ColocarNovaPeca('c', 7, new Pawn(Tab, Color.Preta));
-            ColocarNovaPeca('d', 7, new Pawn(Tab, Color.Preta));
-            ColocarNovaPeca('e', 7, new Pawn(Tab, Color.Preta));
-            ColocarNovaPeca('f', 7, new Pawn(Tab, Color.Preta));
-            ColocarNovaPeca('g', 7, new Pawn(Tab, Color.Preta));
-            ColocarNovaPeca('h', 7, new Pawn(Tab, Color.Preta));
+            ColocarNovaPeca('a', 7, new Pawn(Tab, Color.Preta, this));
+            ColocarNovaPeca('b', 7, new Pawn(Tab, Color.Preta, this));
+            ColocarNovaPeca('c', 7, new Pawn(Tab, Color.Preta, this));
+            ColocarNovaPeca('d', 7, new Pawn(Tab, Color.Preta, this));
+            ColocarNovaPeca('e', 7, new Pawn(Tab, Color.Preta, this));
+            ColocarNovaPeca('f', 7, new Pawn(Tab, Color.Preta, this));
+            ColocarNovaPeca('g', 7, new Pawn(Tab, Color.Preta, this));
+            ColocarNovaPeca('h', 7, new Pawn(Tab, Color.Preta, this));
         }
     }
 }
